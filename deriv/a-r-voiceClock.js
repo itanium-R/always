@@ -1,4 +1,4 @@
-voices = [
+var voices = [
   {
     startup: {
       hour:   8,
@@ -47,13 +47,13 @@ voices = [
       minute: 00,
     },
     url: "./a-r-voice/2100/2100ykr.mp3",
-  },{
+  },/*{
     startup: {
       hour:   21,
       minute: 55,
     },
     url: "./a-r-voice/2155/hotaru.mp3",
-  },{
+  },*/{
     startup: {
       hour:   22,
       minute: 00,
