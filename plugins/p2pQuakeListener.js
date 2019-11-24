@@ -160,12 +160,20 @@ class p2pQuakeListener{
       let repCnt = 2;
 
       str += `　　　　　　■　地震速報　■<br>　<br>`
-      str += `${time}ごろ、${epicent}で<br>地震がありました。<br>`;
+      str += `${time}ごろ、`
+      if(epicent){
+        str += `${epicent}で`
+      }else{
+        epicent = "調査中";
+      }
+      str += `<br>地震がありました。<br>`;
       str += `震源地は${epicent}<br>`;
-      str += `深さ${depth}　マグニチュード${magunit}<br>`;
+      if(depth)   str += `深さ${depth}　`;
+      if(magunit)  str += `マグニチュード${magunit}`;
+      str += `<br>`;
       if(maxScl >= 40 || magunit >= 5){
         str += "揺れが大きかったため、海岸付近の地域では<br>今後の津波の情報に注意してください。<br>";
-      }         
+      }
 
       sclList.forEach(scl => {
         let theSclAddrStr = `震度${this.parseShindo(scl)}　`;
