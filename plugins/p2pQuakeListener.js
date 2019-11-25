@@ -1,7 +1,9 @@
 const P2PURL = "https://api.p2pquake.net/v1/human-readable?limit=1";
 const lineCharNum = 20; // 1行の文字数
 const DEFCHIMEURL = "./plugins/sounds/ring_quakeNotify01_(c)aonr.wav"; 
+
 class p2pQuakeListener{
+
   constructor(fetchDur = 3, dispDur = 1, chimeUrl, allCntThr = 10, areaCntThr = 3){
     this.fetchDur = fetchDur;
     this.dispDur  = dispDur;
@@ -11,6 +13,7 @@ class p2pQuakeListener{
     this.init();
     this.initQtElm();
   }
+
   run(){
     if(this.runInterv){
       console.log("aleady runnning.");
@@ -46,10 +49,70 @@ class p2pQuakeListener{
       this.checkP2pJsonUpdate(gotJson);      
     });
   }
+
   init(){
     this.p2pJson=[];
     this.runInterv = null;
+    this.chimes = [
+      {
+      	scale  : 10,
+      	volume : 0.1,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 20,
+      	volume : 0.1,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 30,
+      	volume : 0.5,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 40,
+      	volume : 1.0,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 45,
+      	volume : 1.0,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 50,
+      	volume : 1.0,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 55,
+      	volume : 1.0,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 60,
+      	volume : 1.0,
+        url    : this.chimeUrl,
+      },
+      {
+      	scale  : 70,
+      	volume : 1.0,
+        url    : this.chimeUrl,
+      },
+    ]
   }
+
+  setChime(scl, url, vol){
+    this.chimes.forEach(c => {
+      if(c.scale == scl){
+        if(url) c.url    = url;
+        if(vol) c.volume = vol;
+        return 0;
+      }
+    });   
+  } 
+
+
   checkP2pJsonUpdate(gotJson){
     if(this.p2pJson.length == 0){
       this.p2pJson = gotJson;
@@ -157,7 +220,9 @@ class p2pQuakeListener{
       let points  = p2pJsonNewPart.points;
 
       let sclList = [70,60,55,50,45,40,30,20,10];
-      let repCnt = 2;
+      let repCnt  = 2;
+      let vol     = 1.0;
+      let chimeUrl = this.chimeUrl;
 
       str += `　　　　　　■　地震速報　■<br>　<br>`
       str += `${time}ごろ、`
@@ -198,17 +263,26 @@ class p2pQuakeListener{
           strList[i+1] = "　　　　" + strList[i+1].slice(4);
         }
       }
-      this.showTelop(strList, repCnt);
+
+      this.chimes.forEach(c => {
+      	if(c.scale == maxScl){
+      	  vol = c.volume;
+          chimeUrl = c.url;
+      	}
+      });
+
+
+      this.showTelop(strList, repCnt, chimeUrl, vol);
     }catch(e){
       console.log(e);
       this.run();
     }
   }
 
-  showTelop(strList,repCnt= 2,rings=true){
+  showTelop(strList, repCnt= 2, chimeUrl, vol=1.0){
     this.stop();
     document.getElementById("quakeInfoTelop").style.display = "flex";
-    if(rings) this.playChime();
+    this.playChime(chimeUrl, vol);
     for(let i = 0;i < (strList.length);i += 2){
       let showPart = () => {
         let s = strList[i] + "<br>";
@@ -229,9 +303,14 @@ class p2pQuakeListener{
       },this.dispDur*1000*(strList.length * repCnt));
   }
   
-  playChime(){
+  playChime(url, vol=1.0){
     var audio = new Audio();
-    audio.src = this.chimeUrl;
+    if(url){
+      audio.src = url;
+    }else{
+      audio.src = this.chimeUrl;
+    };
+  	audio.volume = vol;
     audio.play();
   }
 }
