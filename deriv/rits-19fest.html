@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="../index.html" target="_self">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script src="./plugins/p2pQuakeListener.js"></script>
+  <script src="./fullScSlider/fullScSlider.js"></script>
+  <script src="./always-main.js"></script>
+  <title>always</title>
+  <link href="./always-style.css" rel="stylesheet" type="text/css">
+  <link href="./always-setting.css" rel="stylesheet" type="text/css">
+  <link href="./td-ticker-clock.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <script src="./td-ticker.js"></script>
+  
+  <!-- 設定画面ここから -->
+  <section class="modal" id="settingSec" onclick="hideSettingSec();">
+    <div class="modal" id="settingSecInner" onclick="event.stopPropagation();">
+      <div class="modal" id="settingSecText" >
+        <table>
+          <thead>
+            <tr>
+              <td>iframe ID</td><td>URL</td><td>更新間隔[秒]</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="page in pages">
+              <td><input type="text" v-model="page.iframeId"  class="iframeId"></td>
+              <td><input type="text" v-model="page.url"       class="url"></td>
+              <td><input type="text" v-model="page.reloadDur" class="reloadDur"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="ctrlPageNum">
+          <label>preset : </label>
+          <input type="text"   id="presetName">
+          <input type="button" v-on:click="loadPreset();" value="loadPreset">
+          <input type="button" v-on:click="rmPage();" value="-">
+          <input type="button" v-on:click="addPage();" value="+">
+        </div>
+        <hr>
+        <div class="tickerConfig">
+          <div>
+            <label>Ticker Title : </label>
+            <input type="text"   v-model="tickerProp.title">
+          </div>
+          <div>
+            <label>Ticker URL : </label>
+            <input type="text"   v-model="tickerProp.url">
+          </div>
+          <div>
+            <label>Field Name : </label>
+            <input type="text"   v-model="tickerProp.fieldName">
+          </div>
+          <div>
+            <label>更新間隔[秒] : </label>
+            <input type="text"   v-model="tickerProp.reloadDur" class="reloadDur">
+          </div>
+        </div>
+        <div class="optionConfig">
+          <div class="option">
+            <label for="usesP2pQuakeNotice">P2P地震速報有効</label>
+            <input v-model="usesP2pQuakeNotice" type="checkbox">
+          </div>
+          <div class="option">
+            <label for="isClockBig">デカ時計</label>
+            <input v-model="isClockBig" type="checkbox">
+          </div>
+        </div>
+      </div>
+      <div class="modal">
+        <input type="button" value="キャンセル" onclick="hideSettingSec();">
+        <input type="button" value="適用"  v-on:click="saveAndReload();">
+      </div>
+      </div>
+    </div>
+  </section>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+  <script src="./always-setting.js"></script>
+  <!-- 設定画面ここまで -->
+
+  
+  <iframe id="rccNavi" class="fullSc" name="rccNavi" style="display:none;" onclick="hideRccNavi();"></iframe>
+  
+  <script>
+    
+    var rccNaviProp = [
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 10, // 鳴動開始時刻（時）
+        "min"  : 58, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 11, // 鳴動開始時刻（時）
+        "min"  : 28, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 11, // 鳴動開始時刻（時）
+        "min"  : 58, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 12, // 鳴動開始時刻（時）
+        "min"  : 28, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 12, // 鳴動開始時刻（時）
+        "min"  : 58, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 13, // 鳴動開始時刻（時）
+        "min"  : 28, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 13, // 鳴動開始時刻（時）
+        "min"  : 58, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 14, // 鳴動開始時刻（時）
+        "min"  : 28, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 14, // 鳴動開始時刻（時）
+        "min"  : 58, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 15, // 鳴動開始時刻（時）
+        "min"  : 28, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 15, // 鳴動開始時刻（時）
+        "min"  : 58, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 16, // 鳴動開始時刻（時）
+        "min"  : 28, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=プロジェクト発表&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+
+      // ---------------------------------------------------------------
+      
+      { 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 11, // 鳴動開始時刻（時）
+        "min"  : 14, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 11, // 鳴動開始時刻（時）
+        "min"  : 44, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 12, // 鳴動開始時刻（時）
+        "min"  : 14, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 12, // 鳴動開始時刻（時）
+        "min"  : 44, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 13, // 鳴動開始時刻（時）
+        "min"  : 14, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 13, // 鳴動開始時刻（時）
+        "min"  : 44, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 14, // 鳴動開始時刻（時）
+        "min"  : 14, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 14, // 鳴動開始時刻（時）
+        "min"  : 44, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 15, // 鳴動開始時刻（時）
+        "min"  : 14, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 15, // 鳴動開始時刻（時）
+        "min"  : 44, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },{ 
+        "day"  : "*" , // 1:月 ~ 5:金
+        "hour" : 16, // 鳴動開始時刻（時）
+        "min"  : 14, // 鳴動開始時刻（分）
+        "dur"  : 2,  // 鳴動継続時間（分間）
+        "queryParam" : "?room1=R&room2=303&event=LT&act=発表&uttrs=false&dur1=10&dur2=5" // rccNaviに渡すクエリパラメータ
+      },
+      
+    ];
+
+    function showRccNavi(queryParam,dur){
+      if(document.getElementById("rccNavi").style.display=="none"){
+        document.getElementById("rccNavi").style.display="block";
+        document.getElementById("rccNavi").style.zIndex = 8 ;
+        window.open("./deriv/a-rccnavi.html" + queryParam, "rccNavi");
+        setTimeout(hideRccNavi, dur * 60 * 1000);
+      }
+    }
+    function hideRccNavi(){
+      document.getElementById("rccNavi").style.display="none";
+      window.open("about:blank","rccNavi");
+    }
+    function rccNaviLancher(){
+      let now = new Date();
+      for(prop of rccNaviProp){
+        if((now.getDay()     == prop.day  || prop.day  == "*") &&
+           (now.getHours()   == prop.hour || prop.hour == "*") &&
+           (now.getMinutes() == prop.min  || prop.min  == "*") ){
+          showRccNavi(prop.queryParam,prop.dur);
+        }
+      }
+    }
+    setInterval(rccNaviLancher,10 * 1000);
+
+    setTimeout(()=>{
+      document.getElementById("t_logo").innerHTML = '<img src="https://ritscc.github.io/formviewer/logo-w.png" style="height:6vw">';
+    },1500);
+
+    document.write('<div style="position: fixed;top: 0;bottom: 0;width: 100%;height: 100%;border:0;z-index:10;" ' + 
+                   'onclick="this.parentNode.removeChild(this);"><div style="z-index: 9;background: #235;color: #FFF;display: block;position: fixed;bottom: 7vw;' + 
+                   'right: 10vw;padding: .5em;border-radius: 1em;font-weight: bold;font-size: 1em;"" ' + 
+                   '>ミュート状態です　<input type="button" value="解除" ></div></div>');
+    
+  </script>
+
+</body>
+</html>
+  

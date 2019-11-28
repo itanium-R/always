@@ -152,8 +152,8 @@
       document.getElementById("event").innerHTML = event;
       document.getElementById("act"  ).innerHTML = act;
       document.getElementById("act"  ).style.fontSize = (60/act.length) + "vw";
-      
-      
+      if(event.length>5) document.getElementById("event").style.fontSize = (60/event.length) + "vw";
+            
       function showact(){
         let actElm = document.getElementById("act");
         if(act){
