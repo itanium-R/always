@@ -231,6 +231,11 @@
           "queryParam" : "?event=５限&act=試験&time1=5&time2=999&dur1=20&room1=部&room2=室&uttrs=false" // rccNaviに渡すクエリパラメータ
         },
       ];
+      try{
+        document.weather.document.querySelector("#toExam").click();
+      }catch(e){
+        alert("schoolWatchの時刻の切り替えに失敗しました．\n手動で切り替えてください．\n\n"+e);
+      }
 
     }
     </script>
