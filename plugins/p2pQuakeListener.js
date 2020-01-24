@@ -66,12 +66,12 @@ class p2pQuakeListener{
       },
       {
       	scale  : 30,
-      	volume : 0.5,
+      	volume : 0.3,
         url    : this.chimeUrl,
       },
       {
       	scale  : 40,
-      	volume : 1.0,
+      	volume : 0.8,
         url    : this.chimeUrl,
       },
       {
@@ -183,8 +183,10 @@ class p2pQuakeListener{
     try{
       let regions  = Object.keys(p2pJsonNewPart.regions);
       let str = "Ｐ２Ｐ地震速報　以下の地域で揺れに警戒<br>";
-      let areaStr = "";
-      let repCnt = 3;
+      let areaStr  = "";
+      let repCnt   = 5;
+      let chimeUrl = this.chimeUrl;
+      let vol      = 0.2;
       regions.forEach((r) => {
         if(p2pJsonNewPart.regions[r] > this.areaCntThr){
           areaStr += r + "　";
@@ -195,7 +197,7 @@ class p2pQuakeListener{
         console.log(str.replace(/<br>/g,"\n"));
         let strList = str.split("<br>");
         strList.push("");
-        this.showTelop(strList, repCnt); 
+        this.showTelop(strList, repCnt, chimeUrl, vol); 
       }
     }catch(e){
       console.log(e);
