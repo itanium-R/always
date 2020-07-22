@@ -235,7 +235,7 @@ class p2pQuakeListener{
       }
       str += `<br>地震がありました。<br>`;
       str += `震源地は${epicent}<br>`;
-      if(depth)   str += `深さ${depth}　`;
+      if(depth && Number(depth) !== -1)   str += `深さ${depth}　`;
       if(magunit)  str += `マグニチュード${magunit}`;
       str += `<br>`;
       if(maxScl >= 40 || magunit >= 5){
