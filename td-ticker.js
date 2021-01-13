@@ -52,14 +52,11 @@ class Marquee{
         } else {
           // 送信成功
           let result = JSON.parse(this.request.responseText);
-          console.log(result)
           
           let marqueeStr = document.getElementById("marqueeStr");
           marqueeStr.innerHTML = result[this.fieldName];
           let bgcolor = result["bgcolor"];
-          console.log(bgcolor);
           if(typeof bgcolor !== "undefined"){
-            console.log(bgcolor);
             document.getElementsByClassName("tickerOnepoint")[0].style.backgroundColor = bgcolor;
           }
           
