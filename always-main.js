@@ -32,11 +32,10 @@ if(usesP2pQuakeNotice){
     },2500); // 起動直後の負荷対策・ロード時間差対策で少し時間をおいてから起動
 }
 
-
 function loadIframe(page){
-  window.open(page.url,page.iframeId);
+  document.getElementById(page.iframeId).src = page.url;
   if(page.reloadDur > 0){
-    setInterval(() => { window.open('about:blank', page.iframeId); window.open(page.url, page.iframeId); }, page.reloadDur * 1000);
+    setInterval(() => { document.getElementById(page.iframeId).src = page.url; }, page.reloadDur * 1000);
   }
 }
 
