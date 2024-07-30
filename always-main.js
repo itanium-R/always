@@ -37,7 +37,7 @@ function loadIframe(page){
   if(page.reloadDur > 0){
     setInterval(() => {
      document.getElementById(page.iframeId).src = '';
-     document.getElementById(page.iframeId).src = page.url;
+     setTimeout(() => document.getElementById(page.iframeId).src = page.url, 500);
     }, page.reloadDur * 1000);
   }
 }
