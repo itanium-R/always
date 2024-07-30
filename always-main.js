@@ -35,7 +35,10 @@ if(usesP2pQuakeNotice){
 function loadIframe(page){
   document.getElementById(page.iframeId).src = page.url;
   if(page.reloadDur > 0){
-    setInterval(() => { document.getElementById(page.iframeId).src = page.url; }, page.reloadDur * 1000);
+    setInterval(() => {
+     document.getElementById(page.iframeId).src = '';
+     document.getElementById(page.iframeId).src = page.url;
+    }, page.reloadDur * 1000);
   }
 }
 
