@@ -36,7 +36,7 @@ if(usesP2pQuakeNotice){
 function loadIframe(page){
   window.open(page.url,page.iframeId);
   if(page.reloadDur > 0){
-    setInterval(()=>{window.open(page.url,page.iframeId)}, page.reloadDur*1000);
+    setInterval(() => { window.open('about:blank', page.iframeId); window.open(page.url, page.iframeId); }, page.reloadDur * 1000);
   }
 }
 
