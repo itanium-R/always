@@ -3,8 +3,8 @@
     (c) itanium-R 2019
 
     @param elmList    フルスクリーンなdivやiframeのElementを格納した配列
-    @param slideDur   スライドする間隔[秒]
-    @param slideSpeed スライドする速度[推奨:1~10 標準:5]
+    @param slideDur   スライド間隔[ミリ秒]
+    @param stepDur    スライド時間[ミリ秒]
 
     ※フルスクリーンな要素作成には以下のCSSを利用         
         .fullSc{
@@ -17,46 +17,41 @@
         }
 ---------------------------------------------------------------- */
 class FullScSlider{
-  constructor(elmList,slideDur,slideSpeed){
-    this.posX = 0;
-    this.slideStepInterval = null;
-    slideDur   ? this.slideDur = (slideDur * 1000)  : this.slideDur = 10000;
-    slideSpeed ? this.stepDur  = (100 / slideSpeed) : this.stepDur = 20;
+  constructor(elmList,slideDur,stepDur){
+    this.curIdx = 0;
+
+    this.slideDur = slideDur ? slideDur : 10000;
+    this.stepDur = stepDur ? stepDur : 2000;
     this.stepIncrem = 1;  
+
     this.elmList = elmList;
-    for(var i=1;i<this.elmList.length;i++){
-    this.elmList[i].style.transform = `translateX(${i}00vw)`;
-    }
-    this.posXmax = (this.elmList.length - 1) * 100;
+    [...this.elmList].forEach(elm => elm.style.transform = `translateX(100vw)`);
+    this.elmList[0].style.transform = `translateX(0vw)`;
+
+    this.idxMax = this.elmList.length - 1;
     if(elmList.length>1){
-      setInterval(()=>{this.slide()},this.slideDur+(this.stepDur*100/this.stepIncrem));
+      setInterval(() => this.slide(), this.slideDur + this.stepDur);
     }
   }
 
   slide(){
-    this.preFrameIndex = parseInt(this.posX/100);
-    console.log(this.preFrameIndex);
-    if(!this.slideStepInterval) this.slideStepInterval = setInterval(()=>{this.slideStep()},this.stepDur);
-  }
-    
-  slideStep(){
-  this.posX += this.stepIncrem;
-      
-    if(this.posX <= this.posXmax){  
-      for(var i=this.preFrameIndex;i<=this.preFrameIndex+1;i++){
-        this.elmList[i].style.transform = `translateX(${i*100-this.posX}vw)`;
-      }   
-    }else{
-      this.elmList[0].style.transform = `translateX(${this.posXmax+100-this.posX}vw)`;
-      var i = this.preFrameIndex;
-      this.elmList[i].style.transform = `translateX(${i*100-this.posX}vw)`;
-    }
-    if(this.posX % 100 == 0){
-        clearInterval(this.slideStepInterval);
-        this.slideStepInterval = null;
-    }
-    if(this.posX >= this.posXmax+100){
-      this.posX=0;
-    }
+    const isLastElm = (this.curIdx >= this.idxMax);
+    const curElm = this.elmList[this.curIdx];
+    const nxtElm = isLastElm ? this.elmList[0] : this.elmList[this.curIdx + 1];
+    curElm.style.transition = `transform ease ${this.stepDur / 1000}s`;
+    nxtElm.style.transition = `transform ease ${this.stepDur / 1000}s`;
+    curElm.style.transform = `translateX(-100vw)`;
+    nxtElm.style.transform = `translateX(0vw)`;
+
+    setTimeout(
+      () => {
+        curElm.style.transition = ``;
+        nxtElm.style.transition = ``;
+        curElm.style.transform = `translateX(100vw)`;
+      },
+      this.stepDur);
+
+    this.curIdx += 1;
+    if (isLastElm) this.curIdx = 0;
   }
 }

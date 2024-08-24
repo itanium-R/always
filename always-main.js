@@ -44,7 +44,7 @@ function loadIframe(page){
 
 window.onload = function(){
   slideDur = getParam("slideDur");
-  if(!slideDur) slideDur = 10;
+  if(!slideDur) slideDur = 10000;
 
   var mainFrames = [];
 
@@ -59,7 +59,7 @@ window.onload = function(){
     mainFrames.push(document.getElementById(page.iframeId));
   }
   
-  if(mainFrames.length > 1) new FullScSlider(mainFrames,slideDur,5);
+  if (mainFrames.length > 1) new FullScSlider(mainFrames, slideDur, 2000);
 };
 
 function getParam(name) {
