@@ -59,7 +59,7 @@ window.onload = function(){
     mainFrames.push(document.getElementById(page.iframeId));
   }
   
-  if (mainFrames.length > 1) new FullScSlider(mainFrames, slideDur, 2000);
+  if (mainFrames.length > 1) new FullScSlider(mainFrames, Number(slideDur), 2000);
 };
 
 function getParam(name) {
