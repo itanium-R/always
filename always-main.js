@@ -43,8 +43,11 @@ function loadIframe(page){
 }
 
 window.onload = function(){
-  slideDur = getParam("slideDur");
-  if(!slideDur) slideDur = 10000;
+  const slideDur = getParam("slideDur");
+  const usesBgmOverlay = parseFlg(getParam('bgm'));
+
+  if (!slideDur) slideDur = 10000;
+  if (usesBgmOverlay) createBgmOverlay();
 
   var mainFrames = [];
 
@@ -62,14 +65,26 @@ window.onload = function(){
   if (mainFrames.length > 1) new FullScSlider(mainFrames, Number(slideDur), 2000);
 };
 
+function createBgmOverlay() {
+  const bgmOverlay = document.createElement('iframe');
+  bgmOverlay.style.position = 'fixed';
+  bgmOverlay.style.top = '1vw';
+  bgmOverlay.style.right = '1vw';
+  bgmOverlay.style.width = '32vw';
+  bgmOverlay.style.height = '18vw';
+  bgmOverlay.style.opacity = '0.1';
+  bgmOverlay.style.zIndex = '5';
+  bgmOverlay.style.background = '#FFF';
+  bgmOverlay.style.transition = 'opacity 1s ease-out';
+  bgmOverlay.src = './bgm-select.html';
+  document.body.appendChild(bgmOverlay);
+
+  bgmOverlay.addEventListener("mouseover", () => bgmOverlay.style.opacity = 1.0);
+  bgmOverlay.addEventListener("mouseout", () => bgmOverlay.style.opacity = 0.1);
+}
+
 function getParam(name) {
-  let url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-      results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
+  (new URL(window.location.href)).searchParams.get(name);
 }
 
 function reload(){
