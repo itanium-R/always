@@ -11,25 +11,13 @@ var tickerProp = tickerProp || JSON.parse(localStorage.getItem("tprop")) ||
                     "fieldName" : "msg",
                   };
 
-var isClockBig         = isClockBig         || localStorage.getItem("isBCl") || false;
-var usesP2pQuakeNotice = usesP2pQuakeNotice || localStorage.getItem("usP2p") || false;
+var isClockBig         = parseFlg(isClockBig         || localStorage.getItem("isBCl") || false);
+var usesP2pQuakeNotice = parseFlg(usesP2pQuakeNotice || localStorage.getItem("usP2p") || false);
 
 function parseFlg(a){
-  if(a === "true")  a = true;
-  if(a === "false") a = false;
-  return a;
-}
-
-isClockBig         = parseFlg(isClockBig);
-usesP2pQuakeNotice = parseFlg(usesP2pQuakeNotice);
-
-if(usesP2pQuakeNotice){
-  var p2pQL;
-  setTimeout(() =>  {        
-      let chimeUrl = "./plugins/sounds/o26_(c)maoudamashii.wav"; // 効果音著作：魔王魂
-      p2pQL = new p2pQuakeListener(3, 3, chimeUrl);
-      p2pQL.run();
-    },2500); // 起動直後の負荷対策・ロード時間差対策で少し時間をおいてから起動
+  if(a === "true"  || a === "1") return true;
+  if(a === "false" || a === "0") return false;
+  return !!a;
 }
 
 function loadIframe(page){
@@ -43,15 +31,18 @@ function loadIframe(page){
 }
 
 window.onload = function(){
-  const slideDur = getParam("slideDur");
+  const slideDur = getParam("slideDur") || 10000;
   const usesBgmOverlay = parseFlg(getParam('bgm'));
 
-  if (!slideDur) slideDur = 10000;
   if (usesBgmOverlay) createBgmOverlay();
+  if (usesP2pQuakeNotice) {       
+    const chimeUrl = "./plugins/sounds/o26_(c)maoudamashii.wav"; // 効果音著作：魔王魂
+    const p2pQL = new p2pQuakeListener(3, 3, chimeUrl);
+    p2pQL.run();
+  }
 
-  var mainFrames = [];
-
-  var body = document.getElementsByTagName("body")[0];
+  const mainFrames = [];
+  const body = document.getElementsByTagName("body")[0];
 
   for(page of pages){
     let iframe  = document.createElement("iframe");
@@ -83,8 +74,8 @@ function createBgmOverlay() {
   bgmOverlay.addEventListener("mouseout", () => bgmOverlay.style.opacity = 0.1);
 }
 
-function getParam(name) {
-  (new URL(window.location.href)).searchParams.get(name);
+function getParam(key) {
+  return (new URL(window.location.href)).searchParams.get(key);
 }
 
 function reload(){
