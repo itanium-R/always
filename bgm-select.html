@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafe BGM List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    a {}
+
+    ul {
+      padding: 0;
+      position: relative;
+    }
+
+    ul li {
+      color: white;
+      background: linear-gradient(orange, chocolate);
+      line-height: 1.5;
+      padding: 0.5em;
+      border-bottom: 2px solid white;
+      font-weight: bold;
+      list-style-type: none;
+      overflow: hidden;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      max-height: 3em;
+    }
+
+    ul li a {
+      color: white;
+      text-decoration: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body id="vform">
+  <h1>Cafe BGM List</h1>
+  <ul id="videoList">loading...</ul>
+  <hr>
+  <form>
+    <input type="text" id="vid">
+    <button type="submit">Go!</button>
+  </form>
+
+  <script>
+    vform.addEventListener('submit', event => {
+      event.preventDefault();
+      location.href = `https://www.youtube.com/embed/${vid.value}?autoplay=1`;
+    });
+
+    async function fetchVideos() {
+      const url = 'https://script.google.com/macros/s/AKfycbySgmEWZ9VcKYgaKQnjDh8-qCJruUUoj2GWw8H9NhV6RTwpwHLXjr4sCiU7N5yz280i/exec?m=cafe';
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`レスポンスステータス: ${response.status}`);
+      }
+      const json = await response.json();
+
+      return json;
+    }
+
+    window.addEventListener('load', async () => {
+      const videos = await fetchVideos();
+
+      const videoList = document.getElementById('videoList');
+      videoList.innerText = '';
+      videos.forEach(video => {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+        link.textContent = video.title;
+
+        listItem.appendChild(link);
+        videoList.appendChild(listItem);
+      });
+    });
+  </script>
+</body>
+
+</html>
