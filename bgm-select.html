@@ -121,7 +121,7 @@
 
     function playVideo(videoId) {
       player.style.height = '50vh';
-      player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
     }
 
     window.addEventListener('load', async () => {
