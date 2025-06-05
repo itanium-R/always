@@ -90,8 +90,8 @@
 <body id="vform">
   <iframe src="" id="player" frameborder="0"
     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  <h1>Cafe BGM List</h1>
-  <ul id="videoList">loading...</ul>
+  <h1 id="title">Cafe BGM List</h1>
+  <ul id="videoList"></ul>
   <hr>
   <form>
     <input type="text" id="vid">
@@ -110,9 +110,39 @@
     scrollUp.addEventListener('click', () => window.scrollTo({ top: scrollY - innerHeight, behavior: 'smooth' }))
     scrollDown.addEventListener('click', () => window.scrollTo({ top: scrollY + innerHeight, behavior: 'smooth' }))
 
+    function buildOptions() {
+      document.getElementById('videoList').innerHTML = '';
 
-    async function fetchVideos() {
-      const url = 'https://script.google.com/macros/s/AKfycbySgmEWZ9VcKYgaKQnjDh8-qCJruUUoj2GWw8H9NhV6RTwpwHLXjr4sCiU7N5yz280i/exec?m=cafe';
+      const options = {
+        0: "Lofi Music",
+        1: "Various Music",
+        2: "Cafe Music",
+        3: "Office Music",
+        4: "Work Music",
+      };
+
+      for (const [key, value] of Object.entries(options)) {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.textContent = value;
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          document.getElementById('videoList').innerText = 'loading...';
+          buildVideoList(key);
+        });
+        listItem.appendChild(link);
+        document.getElementById('videoList').appendChild(listItem);
+      }
+    }
+
+    buildOptions();
+
+    document.getElementById('title').addEventListener('click', () => {
+      buildOptions();
+    });
+
+    async function fetchVideos(optionNo) {
+      const url = 'https://script.google.com/macros/s/AKfycbySgmEWZ9VcKYgaKQnjDh8-qCJruUUoj2GWw8H9NhV6RTwpwHLXjr4sCiU7N5yz280i/exec?m=cafe&o=' + optionNo;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`レスポンスステータス: ${response.status}`);
@@ -127,15 +157,16 @@
       player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
     }
 
-    window.addEventListener('load', async () => {
-      const videos = await fetchVideos();
-
+    async function buildVideoList(optionNo) {
+      const videos = await fetchVideos(optionNo);
       const videoList = document.getElementById('videoList');
-      videoList.innerText = '';
+
+      videoList.innerHTML = '';
+
       videos.forEach(video => {
         const listItem = document.createElement('li');
         const link = document.createElement('a');
-        link.addEventListener('click', event => {
+        listItem.addEventListener('click', event => {
           event.preventDefault();
           playVideo(video.id);
         });
@@ -144,7 +175,7 @@
         listItem.appendChild(link);
         videoList.appendChild(listItem);
       });
-    });
+    }
   </script>
 </body>
 
