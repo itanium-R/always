@@ -15,12 +15,13 @@
 
     h1 {
       text-align: center;
+      margin: 0;
     }
 
     ul {
       padding: 0;
       position: relative;
-      margin: 20px;
+      margin: 0 20px;
     }
 
     ul li {
@@ -90,7 +91,7 @@
 <body id="vform">
   <iframe src="" id="player" frameborder="0"
     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  <h1 id="title">Cafe BGM List</h1>
+  <h1 id="title">🎶</h1>
   <ul id="videoList"></ul>
   <hr>
   <form>
@@ -153,7 +154,7 @@
     }
 
     function playVideo(videoId) {
-      player.style.height = '50vh';
+      player.style.height = '80vh';
       player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
     }
 
