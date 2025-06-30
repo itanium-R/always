@@ -15,12 +15,13 @@
 
     h1 {
       text-align: center;
+      margin: 0;
     }
 
     ul {
       padding: 0;
       position: relative;
-      margin: 20px;
+      margin: 0 20px;
     }
 
     ul li {
@@ -153,7 +154,7 @@
     }
 
     function playVideo(videoId) {
-      player.style.height = '50vh';
+      player.style.height = '80vh';
       player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
     }
 
