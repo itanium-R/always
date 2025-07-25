@@ -63,7 +63,7 @@ function createBgmOverlay() {
   bgmOverlay.style.right = '1vw';
   bgmOverlay.style.width = '32vw';
   bgmOverlay.style.height = '18vw';
-  bgmOverlay.style.opacity = '0.1';
+  bgmOverlay.style.opacity = '0.001';
   bgmOverlay.style.zIndex = '5';
   bgmOverlay.style.background = '#FFF';
   bgmOverlay.style.transition = 'opacity 1s ease-out';
@@ -71,7 +71,7 @@ function createBgmOverlay() {
   document.body.appendChild(bgmOverlay);
 
   bgmOverlay.addEventListener("mouseover", () => bgmOverlay.style.opacity = 1.0);
-  bgmOverlay.addEventListener("mouseout", () => bgmOverlay.style.opacity = 0.1);
+  bgmOverlay.addEventListener("mouseout", () => bgmOverlay.style.opacity = 0.001);
 }
 
 function getParam(key) {
